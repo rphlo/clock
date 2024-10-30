@@ -1,2 +1,2 @@
-# clock
-A html clock
+# Clock
+A simple html clock
