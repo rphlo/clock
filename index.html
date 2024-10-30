@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8" />
+ <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏰</text></svg>">
+ <style type="text/css">
+body{
+ background:#000;
+ color:#fff;
+ font: 16px/1.8 sans-serif;
+}
+.container{
+ width: 84%;
+ margin:0 auto;
+ user-select: none;
+}
+header {
+ width: 100%;
+ margin:0px auto;
+}
+h1 {
+ text-align: center;
+ color:#ddd;
+ font: 155px sans-serif;
+ text-transform: uppercase;
+ display: inline-block;
+ width: 100%;
+ margin: 5% auto 5%;
+ font-feature-settings: "tnum";
+ font-variant-numeric: tabular-nums;
+ margin-bottom: 0;
+}
+h4 {
+ text-align: center;
+ color:#ddd;
+ font: 35px sans-serif;
+ font-feature-settings: "tnum";
+ font-variant-numeric: tabular-nums;
+ margin-top: 0;
+ font-weight: bold
+}
+ </style>
+</head>
+<body>
+ <div class="container">
+  <header>
+   <h1 id="clock"></h1>
+   <h4 id="day"></h4>
+  </header>
+ </div>
+ <script type="text/javascript">
+// Clock
+function getDateWeek(d) {
+    const januaryFirst = 
+        new Date(d.getFullYear(), 0, 1);
+    const daysToNextMonday = 
+        (januaryFirst.getDay() === 1) ? 0 : 
+        (7 - januaryFirst.getDay()) % 7;
+    const nextMonday = 
+        new Date(d.getFullYear(), 0, 
+        januaryFirst.getDate() + daysToNextMonday);
+    return (d < nextMonday) ? 52 : 
+    (d > nextMonday ? Math.ceil(
+    (d - nextMonday) / (24 * 3600 * 1000) / 7) : 1);
+}
+
+var refreshClock = function() {
+ const d = new Date();
+ const newTitle = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()] + " " + d.getDate().toString().padStart(2, "0") + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()] + " - " + d.getHours().toString() + ":" + d.getMinutes().toString().padStart(2, "0") + " W" + getDateWeek(d);
+ if (document.title != newTitle) {
+  document.title = newTitle;
+  document.getElementById("clock").innerHTML = "<b>"+d.getHours().toString() + "</b><small>" + d.getMinutes().toString().padStart(2, "0")+"</small>";
+  document.getElementById("day").innerText = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()] + " " + d.getDate().toString().padStart(2, "0") + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()];
+ }
+};
+
+refreshClock();
+setInterval(refreshClock, 1000)
+
+// Fullscreen with f key
+function toggleFullScreen() {
+ if (!document.fullscreenElement) {
+  document.documentElement.requestFullscreen();
+ } else if (document.exitFullscreen) {
+  document.exitFullscreen();
+ }
+}
+
+document.onkeypress = function (e) {
+ e = e || window.event;
+ if (e.code == "KeyF") {
+  toggleFullScreen()
+ }
+};
+
+// Wake screen
+(async () => {
+ try {
+  await navigator.wakeLock.request("screen");
+ } catch (err) {
+  console.log("Wake Lock Screen failed");
+ }
+})();
+
+document.addEventListener("visibilitychange", async () => {
+ if (document.visibilityState === "visible") {
+  try {
+   await navigator.wakeLock.request("screen");
+  } catch (err) {
+   console.log("Wake Lock Screen failed");
+  }
+ }
+});
+ </script>	
+</body>
+</html>
