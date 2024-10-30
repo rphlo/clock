@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+set -e
+mkdir -p build
+cp index.html build/200.html
+echo 1hz.fi > build/CNAME
+surge build/
