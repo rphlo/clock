@@ -50,23 +50,21 @@ h4 {
  </div>
  <script type="text/javascript">
 // Clock
-function getDateWeek(d) {
-    const januaryFirst = 
-        new Date(d.getFullYear(), 0, 1);
-    const daysToNextMonday = 
-        (januaryFirst.getDay() === 1) ? 0 : 
-        (7 - januaryFirst.getDay()) % 7;
-    const nextMonday = 
-        new Date(d.getFullYear(), 0, 
-        januaryFirst.getDate() + daysToNextMonday);
-    return (d < nextMonday) ? 52 : 
-    (d > nextMonday ? Math.ceil(
-    (d - nextMonday) / (24 * 3600 * 1000) / 7) : 1);
+function getDateISOWeek(dt) {
+    const tdt = new Date(dt.valueOf());
+    const dayn = (dt.getDay() + 6) % 7;
+    tdt.setDate(tdt.getDate() - dayn + 3);
+    const firstThursday = tdt.valueOf();
+    tdt.setMonth(0, 1);
+    if (tdt.getDay() !== 4) {
+        tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - tdt) / 604800000);
 }
 
 var refreshClock = function() {
  const d = new Date();
- const newTitle = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()] + " " + d.getDate().toString().padStart(2, "0") + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()] + " - " + d.getHours().toString() + ":" + d.getMinutes().toString().padStart(2, "0") + " W" + getDateWeek(d);
+ const newTitle = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()] + " " + d.getDate().toString().padStart(2, "0") + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()] + " - " + d.getHours().toString() + ":" + d.getMinutes().toString().padStart(2, "0") + " | W" + getDateISOWeek(d);
  if (document.title != newTitle) {
   document.title = newTitle;
   document.getElementById("clock").innerHTML = "<b>"+d.getHours().toString() + "</b><small>" + d.getMinutes().toString().padStart(2, "0")+"</small>";
